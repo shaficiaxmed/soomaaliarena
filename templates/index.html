@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SomaliArena - Web Dashboard</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏟️ SomaliArena</h1>
+            <p>Xarunta Rasmiga ah & Hogaamiyeyaasha Ciyaarta Server-ka</p>
+        </header>
+        <main>
+            <div class="table-card">
+                <h2>🏆 Top Leaderboard (Taajiriinta)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ciyaaryahan</th>
+                            <th>Hantida Guud (Coins)</th>
+                            <th>Darajada (Level)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% leaders.forEach(leader => { %>
+                        <tr>
+                            <td>👤 <%= leader.username %></td>
+                            <td>🪙 <%= leader.wallet %> Coins</td>
+                            <td>⚡ Level <%= leader.level %></td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
