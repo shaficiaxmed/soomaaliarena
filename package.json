@@ -1,0 +1,17 @@
+{
+  "name": "somaliarena-bot",
+  "version": "1.0.0",
+  "description": "SomaliArena Discord Bot & Web Dashboard",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "web": "node app.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.0",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
+    "express": "^4.19.2",
+    "sqlite3": "^5.1.7"
+  }
+}
