@@ -11,6 +11,7 @@ module.exports = {
         if (!target) return message.channel.send("❌ Fadlan sheeg qofka aad lacagta u direyso (`!sii @user 500`).");
         if (target.id === message.author.id) return message.channel.send("❌ Naftaada lacag uma diri kartid!");
         if (isNaN(amount) || amount <= 0) return message.channel.send("❌ Fadlan geli tiro lacag ah oo sax ah.");
+        if (amount > 50000) return message.channel.send("❌ Xadiga ugu badan ee hal mar la wareejin karo waa **50,000 Coins**!");
 
         db.get(`SELECT wallet FROM users WHERE user_id = ?`, [message.author.id], (err, sender) => {
             if (!sender || sender.wallet < amount) {
