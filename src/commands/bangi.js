@@ -10,29 +10,60 @@ module.exports = {
         const argValue = args[1]; 
 
         db.get(`SELECT * FROM users WHERE user_id = ?`, [message.author.id], (err, row) => {
-            if (!row) return message.channel.send("❌ Fadlan marka hore isticmaal `!sameebank` si aad u diiwaan gashato.");
+            if (err) {
+                const errEmbed = new EmbedBuilder()
+                    .setColor(0xFF0000)
+                    .setDescription("❌ Cilad ayaa dhadcay, fadlan dib u sooco.");
+                return message.channel.send({ embeds: [errEmbed] });
+            }
+
+            if (!row) {
+                const regEmbed = new EmbedBuilder()
+                    .setColor(0xFF4444)
+                    .setDescription("❌ Fadlan marka hore isticmaal `!sameebank` si aad u diiwaan gashato.");
+                return message.channel.send({ embeds: [regEmbed] });
+            }
 
             // Hubinta inuu qofku qoray amarka !sameebank oo uu bank leeyahay
             if (!row.bank_account || row.bank_account === 0) {
-                return message.channel.send("❌ Wali ma aadan lahayn account bank ah! Fadlan marka hore qor **`!sameebank`** si aad u furato.");
+                const bankEmbed = new EmbedBuilder()
+                    .setColor(0xFF4444)
+                    .setDescription("❌ Wali ma aadan lahayn account bank ah! Fadlan marka hore qor **`!sameebank`** si aad u furato.");
+                return message.channel.send({ embeds: [bankEmbed] });
             }
 
             // 1. QAYBTA DHIGASHADA
             if (action === 'dhig') {
-                if (row.level < 5) return message.channel.send(`❌ Waa inaad gaartaa **Level 5** si aad lacag ugu shuban karto bankiga!`);
+                if (row.level < 5) {
+                    const lvlEmbed = new EmbedBuilder()
+                        .setColor(0xFF4444)
+                        .setDescription(`❌ Waa inaad gaartaa **Level 5** si aad lacag ugu shuban karto bankiga! (Level-kaaga hadda waa: ${row.level || 0})`);
+                    return message.channel.send({ embeds: [lvlEmbed] });
+                }
                 
                 const amount = parseInt(argValue);
                 if (isNaN(amount) || amount <= 0 || row.wallet < amount) {
-                    return message.channel.send("❌ Lacagtaada wallet-ka ku jirta kuguma filna ama tiro khaldan baad gelisay.");
+                    const amtEmbed = new EmbedBuilder()
+                        .setColor(0xFF4444)
+                        .setDescription("❌ Lacagtaada wallet-ka ku jirta kuguma filna ama tiro khaldan baad gelisay.");
+                    return message.channel.send({ embeds: [amtEmbed] });
                 }
                 
                 db.run(`UPDATE users SET wallet = wallet - ?, bank = bank + ? WHERE user_id = ?`, [amount, amount, message.author.id]);
-                return message.channel.send(`✅ Si guul leh baad bankiga ugu shubatay **${amount} Coins**.`);
+                const successDhig = new EmbedBuilder()
+                    .setColor(0x00FF00)
+                    .setDescription(`✅ Si guul leh baad bankiga ugu shubatay **${amount} Coins**.`);
+                return message.channel.send({ embeds: [successDhig] });
             }
 
             // 2. QAYBTA LABAXDA
             else if (action === 'labax') {
-                if (row.bank <= 0) return message.channel.send("❌ Bankigaaga wax lacag ah kuma jirto!");
+                if (row.bank <= 0) {
+                    const emptyEmbed = new EmbedBuilder()
+                        .setColor(0xFF4444)
+                        .setDescription("❌ Bankigaaga wax lacag ah kuma jirto!");
+                    return message.channel.send({ embeds: [emptyEmbed] });
+                }
 
                 let amountToWithdraw;
                 if (argValue === 'dhammaan' || argValue === 'all') {
@@ -42,11 +73,17 @@ module.exports = {
                 }
 
                 if (isNaN(amountToWithdraw) || amountToWithdraw <= 0 || row.bank < amountToWithdraw) {
-                    return message.channel.send("❌ Tirada aad gelisay waa khalad ama bangigaaga lacag intaas le'eg kama jirto.");
+                    const errWithDraw = new EmbedBuilder()
+                        .setColor(0xFF4444)
+                        .setDescription("❌ Tirada aad gelisay waa khalad ama bangigaaga lacag intaas le'eg kama jirto.");
+                    return message.channel.send({ embeds: [errWithDraw] });
                 }
                 
                 db.run(`UPDATE users SET wallet = wallet + ?, bank = bank - ? WHERE user_id = ?`, [amountToWithdraw, amountToWithdraw, message.author.id]);
-                return message.channel.send(`✅ Si guul leh baad bankiga ugala baxday **${amountToWithdraw} Coins**.`);
+                const successLabax = new EmbedBuilder()
+                    .setColor(0x00FF00)
+                    .setDescription(`✅ Si guul leh baad bankiga ugala baxday **${amountToWithdraw} Coins**.`);
+                return message.channel.send({ embeds: [successLabax] });
             }
 
             // 3. HADDII AADAN QORIN DHIG AMA LABAX (Muujinta hantida)
