@@ -10,7 +10,7 @@ module.exports = {
         const argValue = args[1]; 
 
         db.get(`SELECT * FROM users WHERE user_id = ?`, [message.author.id], (err, row) => {
-            if (!row) return message.channel.send("❌ Fadlan marka hore isticmaal `!aniga` si aad u diiwaan gashato.");
+            if (!row) return message.channel.send("❌ Fadlan marka hore isticmaal `!sameebank` si aad u diiwaan gashato.");
 
             // Hubinta inuu qofku qoray amarka !sameebank oo uu bank leeyahay
             if (!row.bank_account || row.bank_account === 0) {
