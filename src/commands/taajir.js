@@ -5,57 +5,51 @@ module.exports = {
     name: 'taajir',
     description: 'Eeg liiska 10-ka qof ee lacagta ugu badan ku haysta Wallet-kooda',
     async execute(message) {
-        // Marka hore hubi oo diiwaan geli user-ka haddii uusan weli ku jirin database-ka
-        db.get(`SELECT user_id FROM users WHERE user_id = ?`, [message.author.id], (err, userRow) => {
-            if (!userRow) {
-                db.run(`INSERT OR IGNORE INTO users (user_id, username, wallet, diamonds, hp, energy) VALUES (?, ?, 1000, 10, 100, 100)`, 
-                    [message.author.id, message.author.username], () => {
-                        fetchLeaderboard();
-                    });
-            } else {
-                fetchLeaderboard();
-            }
-        });
-
-        function fetchLeaderboard() {
-            db.all(`SELECT user_id, username, COALESCE(wallet, 0) as wallet FROM users ORDER BY wallet DESC LIMIT 10`, [], async (err, rows) => {
-                if (err) {
-                    console.error(err);
-                    return message.channel.send("❌ **Cilad ayaa dhacday:** Fadlan dib u day.");
-                }
-                if (!rows || rows.length === 0) {
-                    return message.channel.send("⚠️ **Ogeysiis:** Wali lama helin xogta taajiriinta.");
-                }
-
-                let leaderboardText = "";
-                for (let index = 0; index < rows.length; index++) {
-                    const r = rows[index];
-                    const medals = ["👑", "🥈", "🥉", "`#4`", "`#5`", "`#6`", "`#7`", "`#8`", "`#9`", "`#10`"];
-                    
-                    let displayName = r.username;
-                    if (message.guild) {
-                        try {
-                            const member = await message.guild.members.fetch(r.user_id).catch(() => null);
-                            if (member) {
-                                displayName = member.displayName;
-                            }
-                        } catch (e) {}
+        // Marka hore xaqiiji in qofka amarkan qoray uu ku jiro database-ka (haddii u kale uusan jirin ha la diiwaan geliyo)
+        db.run(`INSERT OR IGNORE INTO users (user_id, username, wallet, diamonds, hp, energy) VALUES (?, ?, 1000, 10, 100, 100)`, 
+            [message.author.id, message.author.username], (err) => {
+                if (err) console.error(err);
+                
+                // Intaa kadib soo jiido 10-ka qof ee ugu lacagta badan wallet-ka
+                db.all(`SELECT user_id, username, COALESCE(wallet, 0) as wallet FROM users ORDER BY wallet DESC LIMIT 10`, [], async (err, rows) => {
+                    if (err) {
+                        console.error(err);
+                        return message.channel.send("❌ **Cilad ayaa dhacday:** Fadlan dib u day.");
                     }
-                    if (!displayName) displayName = `<@${r.user_id}>`;
+                    if (!rows || rows.length === 0) {
+                        return message.channel.send("⚠️ **Ogeysiis:** Wali lama helin xogta taajiriinta.");
+                    }
 
-                    const rankBadge = medals[index] || `\`#${index + 1}\``;
-                    leaderboardText += `${rankBadge} **${displayName}**\n┗ 🪙 **${r.wallet.toLocaleString()} Coins** (Wallet)\n\n`;
-                }
+                    let leaderboardText = "";
+                    for (let index = 0; index < rows.length; index++) {
+                        const r = rows[index];
+                        const medals = ["👑", "🥈", "🥉", "`#4`", "`#5`", "`#6`", "`#7`", "`#8`", "`#9`", "`#10`"];
+                        
+                        let displayName = r.username;
+                        if (message.guild) {
+                            try {
+                                const member = await message.guild.members.fetch(r.user_id).catch(() => null);
+                                if (member) {
+                                    displayName = member.displayName;
+                                }
+                            } catch (e) {}
+                        }
+                        if (!displayName) displayName = `<@${r.user_id}>`;
 
-                const embed = new EmbedBuilder()
-                    .setTitle("🏆 SOMALIARENA • TOP 10 WALLET LEADERBOARD")
-                    .setColor(0x00D2FF)
-                    .setDescription(leaderboardText)
-                    .setFooter({ text: 'SomaliaRena Economy System • Live Ranking', iconURL: message.client.user.displayAvatarURL() })
-                    .setTimestamp();
+                        const rankBadge = medals[index] || `\`#${index + 1}\``;
+                        leaderboardText += `${rankBadge} **${displayName}**\n┗ 🪙 **${r.wallet.toLocaleString()} Coins** (Wallet)\n\n`;
+                    }
 
-                message.channel.send({ embeds: [embed] });
-            });
-        }
+                    const embed = new EmbedBuilder()
+                        .setTitle("🏆 SOMALIARENA • TOP 10 WALLET LEADERBOARD")
+                        .setColor(0x00D2FF)
+                        .setDescription(leaderboardText)
+                        .setFooter({ text: 'SomaliaRena Economy System • Live Ranking', iconURL: message.client.user.displayAvatarURL() })
+                        .setTimestamp();
+
+                    message.channel.send({ embeds: [embed] });
+                });
+            }
+        );
     }
 };
