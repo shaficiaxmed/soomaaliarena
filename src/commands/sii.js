@@ -23,16 +23,18 @@ module.exports = {
                 if (!receiver) return message.channel.send("❌ Qofkan aad lacagta u direyso wali lama diiwaan gelin ciyaarta.");
 
                 // Ka jar diraha kana geli kan la siinayo
-                db.run(`UPDATE users SET wallet = wallet - ? WHERE user_id = ?`, [amount, message.author.id]);
-                db.run(`UPDATE users SET wallet = wallet + ? WHERE user_id = ?`, [amount, target.id]);
+                db.serialize(() => {
+                    db.run(`UPDATE users SET wallet = wallet - ? WHERE user_id = ?`, [amount, message.author.id]);
+                    db.run(`UPDATE users SET wallet = wallet + ? WHERE user_id = ?`, [amount, target.id]);
+                });
 
                 const embed = new EmbedBuilder()
-                    .setTitle("💸 SOMALIARENA - Xawilaad")
-                    .setColor(0x4189DD)
-                    .setDescription(`✅ Si guul leh baad **${amount} Coins** ugu dirtay **${target.username}**!`)
+                    .setTitle("💸 SOMALIARENA - WAAREEJINTA LACAGTA")
+                    .setColor(0x00FF00)
+                    .setDescription(`✅ Si guul leh baad **${amount.toLocaleString()} Coins** ugu wareejisay **${target.username}**!`)
                     .setTimestamp();
 
-                message.channel.send({ embeds: [embed] });
+                return message.channel.send({ embeds: [embed] });
             });
         });
     }
