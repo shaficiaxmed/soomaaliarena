@@ -18,7 +18,7 @@ module.exports = {
                 return message.channel.send("❌ Fadlan mar labaad qor amarka `!shaqo`, hadda waa la diiwaan geliyay xogtaada.");
             }
 
-            const cooldownTime = 5 * 60 * 60 * 1000; // 5 saacadood (Miliseconds)
+            const cooldownTime = 2 * 60 * 60 * 1000; // 5 saacadood (Miliseconds)
             // Haddi aad rabto 2 saacadood beddel oo ka dhig: 2 * 60 * 60 * 1000
             
             const lastWork = row.last_work || 0;
