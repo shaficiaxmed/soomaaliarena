@@ -13,7 +13,8 @@ db.serialize(() => {
         energy INTEGER DEFAULT 100,
         shield_expiry DATETIME DEFAULT NULL,
         bank_account INTEGER DEFAULT 0,
-        last_work INTEGER DEFAULT 0
+        last_work INTEGER DEFAULT 0,
+        diamonds INTEGER DEFAULT 10
     )`);
 });
 
