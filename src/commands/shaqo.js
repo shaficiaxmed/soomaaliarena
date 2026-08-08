@@ -3,7 +3,7 @@ const db = require('../../database');
 
 module.exports = {
     name: 'shaqo',
-    description: 'Ka shaqee magaalada si aad u hesho lacag (Cooldown: 5 saacadood)',
+    description: 'Ka shaqee magaalada si aad u hesho lacag (Cooldown: 2 saacadood)',
     execute(message) {
         db.get(`SELECT * FROM users WHERE user_id = ?`, [message.author.id], (err, row) => {
             if (err) {
@@ -18,22 +18,23 @@ module.exports = {
                 return message.channel.send("❌ Fadlan mar labaad qor amarka `!shaqo`, hadda waa la diiwaan geliyay xogtaada.");
             }
 
-            const cooldownTime = 2 * 60 * 60 * 1000; // 5 saacadood (Miliseconds)
-            // Haddi aad rabto 2 saacadood beddel oo ka dhig: 2 * 60 * 60 * 1000
-            
+            const cooldownTime = 2 * 60 * 60 * 1000; // 2 saacadood (Milliseconds)
             const lastWork = row.last_work || 0;
             const now = Date.now();
 
             // Hubinta in waqtigii uusan weli dhamaan
             if (now - lastWork < cooldownTime) {
                 const remainingTime = cooldownTime - (now - lastWork);
+                
+                // Xisaabinta saacadaha, daqiiqadaha, iyo ilbiriqsiyada
                 const hours = Math.floor(remainingTime / (1000 * 60 * 60));
                 const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
 
                 const waitEmbed = new EmbedBuilder()
                     .setColor(0xFF4444)
                     .setTitle("⏳ Waqtiga Nasashada (Cooldown)")
-                    .setDescription(`Wali waqtigii shaqada kaama dhamaan!\n\nFadlan sug **${hours} saacadood iyo ${minutes} daqiiqo** inta aadan dib u shaqayn.`);
+                    .setDescription(`Wali waqtigii shaqada kaama dhamaan!\n\nFadlan sug **${hours} saacadood, ${minutes} daqiiqo iyo ${seconds} ilbiriqsi** inta aadan dib u shaqayn.`);
                 return message.channel.send({ embeds: [waitEmbed] });
             }
 
