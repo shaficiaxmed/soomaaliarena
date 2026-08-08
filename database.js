@@ -11,7 +11,9 @@ db.serialize(() => {
         xp INTEGER DEFAULT 0,
         hp INTEGER DEFAULT 100,
         energy INTEGER DEFAULT 100,
-        shield_expiry DATETIME DEFAULT NULL
+        shield_expiry DATETIME DEFAULT NULL,
+        bank_account INTEGER DEFAULT 0,
+        last_work INTEGER DEFAULT 0
     )`);
 });
 
